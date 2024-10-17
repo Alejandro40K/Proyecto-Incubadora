@@ -5,7 +5,7 @@
 // Alumno:   Alejando Orozco Romo
 // Codigo:   218171511
 // Archivo:  Control_Temperatura.h
-// Fecha de edicion: 15/10/2024
+// Fecha de edicion: 16/10/2024
 //////////////////////////////////////////////////////////////////
 
 #ifndef CONTROL_TEMPERATURA_H
@@ -16,7 +16,16 @@
 /* Incluimos la cabecera de arduino, por que como no estamos trabajando en in archivo .ino de arduino, 
 no tenemos las funciones básicas de este en los archivos .h y cpp. Cuando lo agregamos a estos archivos
 adquieren todas las funciones de arduino*/
+#include <OneWire.h>
+#include <DallasTemperature.h>
 
+extern OneWire;
+extern DallasTemperature;
+
+void IniciarSistemaTemperatura();
+void ControlarTemperatura();
+void ControlarSistemaVentilacion();
+void ControlarRsistenciaTermica();
 
 #endif
 

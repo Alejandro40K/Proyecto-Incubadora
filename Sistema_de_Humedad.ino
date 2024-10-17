@@ -9,16 +9,20 @@
 //////////////////////////////////////////////////////////////////
 
 #include "Control_humedad.h"
+#include "Control_Temperatura.h"
+
 
 
 void setup() {
 
-  iniciarSistema();
+  //iniciarSistema();
+  IniciarSistemaTemperatura();
    
 }
 
 void loop() {
 
-    delay(2000);
-    comenzarPrograma();
+    //delay(2000);
+    //comenzarPrograma();
+    ControlarTemperatura();
 }
