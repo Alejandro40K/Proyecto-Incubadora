@@ -32,11 +32,11 @@ extern float humedad; // Solo declaramos, no definimos
 
 
 //Declaracion de funciones 
-void iniciarSistema();
+void iniciarSistemaHumidificador();
 void leerHumedad();
 void controlarHumidificador();
-void controlarAlarma();
-void comenzarPrograma();
+void controlarAlarmaHumidificador();
+void comenzarProgramaHumidificador();
 
 // Cambiar esta funcion a temperatura, Por definir
 // void controlVentilacion(); 

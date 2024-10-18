@@ -15,14 +15,14 @@
 
 void setup() {
 
-  //iniciarSistema();
+  //iniciarSistemaHumidificador();
   IniciarSistemaTemperatura();
    
 }
 
 void loop() {
 
-    //delay(2000);
-    //comenzarPrograma();
-    ControlarTemperatura();
+    delay(2000);
+    //comenzarProgramaHumidificador();
+    comenzarProgramaTemperatura();
 }
