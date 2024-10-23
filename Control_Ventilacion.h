@@ -16,7 +16,11 @@
 /* Incluimos la cabecera de arduino, por que como no estamos trabajando en in archivo .ino de arduino, 
 no tenemos las funciones básicas de este en los archivos .h y cpp. Cuando lo agregamos a estos archivos
 adquieren todas las funciones de arduino*/
-
+/*
+void iniciarVentilador();
+void activarVentilador();
+void desactivarVentilador();
+*/
 #endif
 
 

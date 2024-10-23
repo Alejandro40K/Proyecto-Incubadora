@@ -8,7 +8,8 @@
 // Fecha de edicion: 17/10/2024
 //////////////////////////////////////////////////////////////////
 
-//BIBLIOTECAS 
+//BIBLIOTECAS /*
+
 #include "Control_Alarma.h"
 
 void iniciarAlarma() {

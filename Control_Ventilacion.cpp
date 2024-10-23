@@ -10,3 +10,19 @@
 
 //BIBLIOTECAS 
 #include "Control_Ventilacion.h"
+
+/*
+const int pinVentilador = 4; // Define el pin del relé para el ventilador
+
+void iniciarVentilador() {
+    pinMode(pinVentilador, OUTPUT);
+    desactivarVentilador();
+}
+
+void activarVentilador() {
+    digitalWrite(pinVentilador, HIGH);  // Activa el ventilador
+}
+
+void desactivarVentilador() {
+    digitalWrite(pinVentilador, LOW);   // Desactiva el ventilador
+}*/

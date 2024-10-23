@@ -6,6 +6,10 @@
 // Codigo:   218171511
 // Archivo:  Control_humedad.h
 // Fecha de edicion: 15/10/2024
+// Nota: 
+//      Incluimos la cabecera de arduino, por que como no estamos trabajando en in archivo .ino de arduino, 
+//      no tenemos las funciones básicas de este en los archivos .h y cpp. Cuando lo agregamos a estos archivos
+//      adquieren todas las funciones de arduino*/
 //////////////////////////////////////////////////////////////////
 
 #ifndef CONTROL_HUMEDAD_H
@@ -13,33 +17,49 @@
 
 // BIBLIOTECAS
 #include <Arduino.h>
-/* Incluimos la cabecera de arduino, por que como no estamos trabajando en in archivo .ino de arduino, 
-no tenemos las funciones básicas de este en los archivos .h y cpp. Cuando lo agregamos a estos archivos
-adquieren todas las funciones de arduino*/
-
+#include <Wire.h>
 #include <DHT.h>
 #define DHTTYPE DHT11
 
 
-// Pines de arduino 
+// PINES DEL ARDUINO UNO
 #define DHTPIN 9 	 // Pin para el sensor DHT11
 #define relePin 7    // Pin para controlar el rele
-#define buzzerPin 6  // Pin para el buzzer
+#define TRIGGER_PIN 11
+#define ECHO_PIN 12
 
+//VARIABLES EXTERNAS
+
+// variables sensor DHT11
 extern DHT dht; // Declaración de un objeto DHT externo
-// Declaración de variables globales
 extern float humedad; // Solo declaramos, no definimos
+// varriables externas sensor ultrasonico
+extern long tiempo;
+extern int distancia;
+extern int nueva_distancia;
+extern float velocidad;
 
+//DECLARACION DE FUNCIONES 
 
-//Declaracion de funciones 
 void iniciarSistemaHumidificador();
 void leerHumedad();
-void controlarHumidificador();
-void controlarAlarmaHumidificador();
 void comenzarProgramaHumidificador();
+void mostrarHumedad();
+//funciones para controlar el humidificador desde el RTC
+void controlarHumidificadorAntes19();
+void controlarHumidificadorDespues19();
+//funciones para activar una alarma de control 
+void controlarAlarmaDespues19();
+void controlarAlarmaAntes19();
+
+
 
 // Cambiar esta funcion a temperatura, Por definir
 // void controlVentilacion(); 
+//completar: enviara una señal cuando el nivel este bajo al numero de celular
+//void nivelTanque();
+//void iniciarUltrasonico();
+//void controlarHumidificador();
 
 #endif
 
