@@ -9,24 +9,32 @@
 // NOTAS:
 //      EVITAR NUMEROS MAGICOS, AGREGAR VARIABLES PARA 
 //      CONTRARESTARLOS, COMO HUMEDAD MAXIMA, MINIMA, ETC. 
+// RECUERDA PENDEJO!!!!!
+// FIJATE BIEN EL LAS FUCNIONES, QUERIAS LLAMAR MOSTRAR INFO CUANDO TENIAS QUE LLAMAR DESDE 
+// EL MENU COMENZAR SISTEMA DESDE EL control_sistema.h
+// Ver que sirve del codigo del menu de Papi CG
+/* Haslo paso a paso, simplificado
+no uses chad GTP, enfocate aen otras cosas, deja el menu para el final. 
+mañana temperatura y ventiladores, limpia codigo y se mas claro en las fucniones
+has un diagrama de flujo */
 //////////////////////////////////////////////////////////////////
 
-#include "Control_humedad.h"
-#include "Control_Temperatura.h"
-#include "Control_Sistema.h"
 
-
+#include "Menu.h"
 
 void setup() {
-  IniciarRTC();
+  //iniciarSistema();
 
   //iniciarSistemaHumidificador();
   //IniciarSistemaTemperatura();
    
+  iniciarSistemaTotal();
+  //IniciarRTC();
 }
 
+
 void loop() {
-  comenzarSistema();
+  mostrarmanu();
   delay(2000);
     //comenzarProgramaHumidificador();
     //comenzarProgramaTemperatura();*/

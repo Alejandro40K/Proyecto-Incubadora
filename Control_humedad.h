@@ -23,16 +23,15 @@
 
 
 // PINES DEL ARDUINO UNO
-#define DHTPIN 9 	 // Pin para el sensor DHT11
+#define DHTPIN 8 	 // Pin para el sensor DHT11
 #define relePin 7    // Pin para controlar el rele
 #define TRIGGER_PIN 11
 #define ECHO_PIN 12
 
 //VARIABLES EXTERNAS
-
 // variables sensor DHT11
-extern DHT dht; // Declaración de un objeto DHT externo
-extern float humedad; // Solo declaramos, no definimos
+extern DHT dht; 
+extern float humedad;
 // varriables externas sensor ultrasonico
 extern long tiempo;
 extern int distancia;

@@ -10,23 +10,21 @@
 //      Agregar capacitores del desacoplo para que se filtre el riuido generado por el relé
 //////////////////////////////////////////////////////////////////
 
+//BIBLIOTECAS
 #include "Control_humedad.h"
 #include "Control_Alarma.h"
 #include "Control_Ventilacion.h"
 #include "LCD.h"
 
-// Definir el objeto DHT
-DHT dht(DHTPIN, DHTTYPE); // Aquí es donde lo definimos
-// Definición de la variable global
-float humedad = 0; // Aquí es donde lo definimos
-
-//variables ultrasonico
+//VARIABLES EXTERNAS 
+DHT dht(DHTPIN, DHTTYPE); 
+float humedad = 0; 
 long tiempo;
 int distancia;
 int nueva_distancia = 0;
 float velocidad = 0.01715; 
 
-
+//FUNCION PARA INICIAR EL HUMIDIFICADOR 
 void iniciarSistemaHumidificador(){
   //Establecemos comunicacion serial
   Serial.begin(9600);
@@ -40,6 +38,7 @@ void iniciarSistemaHumidificador(){
   iniciarLCD();
 }
 
+//FUNCION PARA LEER LA HUMEDAD CON EL SENSOR DHT
 void leerHumedad(){
   //leemos humedad
   humedad = dht.readHumidity();
@@ -57,21 +56,26 @@ void leerHumedad(){
 }
 
 
+//FUCNIONES PARA CONTROLAR EL HUMIDIFICADOR 
 void controlarHumidificadorAntes19() {
     leerHumedad();
-    // Si la humedad es mayor a 85%, se apaga el humidificador 
-    if (humedad > 85) {
+    // Si la humedad es mayor a 80%, se apaga el humidificador 
+    if (humedad > 80) {
         digitalWrite(relePin, HIGH); 
         Serial.println("Humidificador Apagado");
+
+        // Verificar si se debe activar la alarma
+        if (humedad > 85) {
+            controlarAlarmaAntes19(); // Llamar a la función de control de alarma antes del día 19 
+        }
     } 
-    // Si la humedad es menor a 80%, enciende el humidificador 
-    else if (humedad < 80) {
+    // Si la humedad es menor a 70%, enciende el humidificador 
+    else if (humedad < 70) {
         digitalWrite(relePin, LOW); 
         Serial.println("Humidificador Encendido");
     }
-    
-    controlarAlarmaAntes19(); // Llamar a la función de control de alarma antes del día 19
 }
+
 
 void controlarHumidificadorDespues19() {
     leerHumedad();
@@ -89,11 +93,12 @@ void controlarHumidificadorDespues19() {
     controlarAlarmaDespues19(); // Llamar a la función de control de alarma después del día 19
 }
 
+//FUNCIONES PARA CONTROLAR LAS ALARMAS DEL HUMIDIFICADOR 
 void controlarAlarmaAntes19() {
     // Alarma activada si la humedad es mayor a 87%
-    if (humedad > 87) {
+    if (humedad > 85) {
         activarAlarma();
-        Serial.println("¡Alerta! Humedad crítica antes del día 19");
+        Serial.println("¡Alerta! Humedad crítica");
     } else {
         desactivarAlarma();
     }
@@ -101,14 +106,15 @@ void controlarAlarmaAntes19() {
 
 void controlarAlarmaDespues19() {
     // Cambia el umbral de alarma según el día de incubación
-    if (humedad > 90) {
+    if (humedad > 90) {        
         activarAlarma();
-        Serial.println("¡Alerta! Humedad crítica después del día 19");
+        Serial.println("¡Alerta! Humedad crítica");
     } else {
         desactivarAlarma();
     }
 }
 
+//FUNCION PARA MOSTRAR LA HUMEDAD 
 void mostrarHumedad(){
   //lcd.clear();
   lcd.setCursor(0, 2);
@@ -117,9 +123,10 @@ void mostrarHumedad(){
   lcd.print(" %");
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////
 
-//para comprobar el funcionamiento dle humidificador
 
+/* para comprobar el funcionamiento dle humidificador
 void comenzarProgramaHumidificador(){
 
   iniciarSistemaHumidificador();
@@ -127,7 +134,7 @@ void comenzarProgramaHumidificador(){
   controlarHumidificadorAntes19();
   //controlarAlarmaHumidificador();
   mostrarHumedad();
-}
+}*/
 
 
 /*

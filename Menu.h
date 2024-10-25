@@ -12,10 +12,10 @@
 
 #ifndef MENU_H
 #define MENU_H
-
-// BIBLIOTECAS
 #include <Arduino.h>
+#include "Control_Sistema.h"
+
+void iniciarSistemaTotal();
+void mostrarmanu();
 
 #endif
-
-

@@ -18,8 +18,9 @@
 #include "Control_Temperatura.h"
 #include "LCD.h"
 
+//VARIABLES EXTERNAS 
 extern RTC_DS1307 rtc;
-extern DateTime fechaInicioIncubacion;  // Para almacenar el tiempo de inicio
+extern DateTime fechaInicioIncubacion; 
 
 void IniciarRTC();
 int obtenerDiaIncubacion();

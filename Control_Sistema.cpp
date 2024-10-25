@@ -6,6 +6,9 @@
 // Codigo:   218171511
 // Archivo:  Control_Sistema.cpp
 // Fecha de edicion: 21/10/2024
+// Nota: revisarsi el sitema no del reloj no se reinicia cada ves que  
+//       carga el arduino, agregar horas, minutos y segundos
+//      REVISAR NOTAS ALARMA UNIFICADA 
 //////////////////////////////////////////////////////////////////
 
 //BIBLIOTECAS 
@@ -13,6 +16,7 @@
 
 RTC_DS1307 rtc;
 DateTime fechaInicioIncubacion;
+
 // Variable para el día de incubación
 int diaIncubacion = 0;
 
@@ -29,17 +33,13 @@ void IniciarRTC() {
   }
   // Configura la fecha de inicio de la incubación
   // Ejemplo: 1 de octubre de 2024
-  fechaInicioIncubacion = DateTime(2024, 10, 21, 0, 0, 0);
+  fechaInicioIncubacion = DateTime(2024, 10, 3, 0, 0, 0);
   iniciarSistemaHumidificador();
+  IniciarSistemaTemperatura();
   iniciarLCD();
 
 }
 
-/* SE USARA CUANDO SE TENGAN TODOS LOS DEMAS SENSORES Y MOTORES 
-void iniciarComponentes() {
-    iniciarSistemaHumidificador(); // Inicializa el DHT11, el relé, la alarma y el LCD
-    IniciarRTC(); // Inicializa el RTC
-}*/
 
 // Función para calcular cuántos días han pasado desde el inicio de la incubación
 int obtenerDiaIncubacion() {
@@ -59,8 +59,10 @@ void actualizarEstadoIncubacion() {
     // Controlar la humedad dependiendo del día de incubación
     if (diaIncubacion > 18) {
         controlarHumidificadorDespues19();  // Control específico después del día 18
+        ControlAlarmaTemperaturaDespues19();
     } else {
         controlarHumidificadorAntes19();  // Control normal antes del día 18
+        ControlAlarmaTemperaturaAntes19();
     }
 }
 
@@ -81,11 +83,19 @@ void mostrarInformacion() {
 
     // Llamamos a la funcion mostrarHumedad para mostrar la humedad
     mostrarHumedad();  // Esto mostrará la humedad en la segunda línea
+    leerTemperatura();
 }
 
 
 void comenzarSistema(){
-  comenzarProgramaHumidificador();
   actualizarEstadoIncubacion();
   mostrarInformacion(); 
 }
+
+
+/* SE USARA CUANDO SE TENGAN TODOS LOS DEMAS SENSORES Y MOTORES 
+void iniciarComponentes() {
+    iniciarSistemaHumidificador(); // Inicializa el DHT11, el relé, la alarma y el LCD
+    IniciarRTC(); // Inicializa el RTC
+}*/
+

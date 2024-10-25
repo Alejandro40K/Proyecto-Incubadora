@@ -6,6 +6,9 @@
 // Codigo:   218171511
 // Archivo:  Control_Temperatura.h
 // Fecha de edicion: 16/10/2024
+// Nota:    Incluimos la cabecera de arduino, por que como no estamos trabajando en in archivo .ino de arduino, 
+//          no tenemos las funciones básicas de este en los archivos .h y cpp. Cuando lo agregamos a estos archivos
+//          adquieren todas las funciones de arduino
 //////////////////////////////////////////////////////////////////
 
 #ifndef CONTROL_TEMPERATURA_H
@@ -13,23 +16,28 @@
 
 // BIBLIOTECAS
 #include <Arduino.h>
-/* Incluimos la cabecera de arduino, por que como no estamos trabajando en in archivo .ino de arduino, 
-no tenemos las funciones básicas de este en los archivos .h y cpp. Cuando lo agregamos a estos archivos
-adquieren todas las funciones de arduino*/
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
+// DEFINIMOS VARIABLES EXTERNAS
 extern OneWire;
 extern DallasTemperature;
 extern float temp;
 
+//DEFINIMOS FUNCIONES
 void IniciarSistemaTemperatura();
-void ControlarTemperatura();
 void ControlAlarmaTemperatura();
 void comenzarProgramaTemperatura();
-//Por definir
 void ControlResistenciaTermica();
+void leerTemperatura();
+//void mostrarTemperatura();
 
+void ControlarTemperaturaAntes19();
+void ControlarTemperaturaDespues19();
+void ControlAlarmaTemperaturaAntes19();
+void ControlAlarmaTemperaturaDespues19();
+
+//void ControlarTemperatura();
 
 #endif
 
