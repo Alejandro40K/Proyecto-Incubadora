@@ -11,25 +11,34 @@
 //          adquieren todas las funciones de arduino
 //
 //////////////////////////////////////////////////////////////////
-
 #ifndef CONTROL_VENTILACION_H
 #define CONTROL_VENTILACION_H
 
 // BIBLIOTECAS
 #include <Arduino.h>
+
+// PINS para los relés del ventilador
+#define VentiladorCalefaccion 3
 #define VentiladorEntrada 4
 #define VentiladorSalida 5
 
 // DEFINIMOS FUNCIONES 
-
 void iniciarVentiladores();
 
 void activarVentiladorEntrada();
 void desactivarVentiladorEntrada();
 
 void activarVentiladorSalida();
-void desactivarVentiladorSalidda();
+void desactivarVentiladorSalida();  // Corrección aquí
+
+void activarVentiladorCalefaccion();
+void desactivarVentiladorCalefaccion();
+
+// Función de pruebas 
+void empezarVentilador();
 
 #endif
+
+
 
 

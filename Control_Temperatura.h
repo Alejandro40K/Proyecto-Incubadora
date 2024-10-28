@@ -34,8 +34,7 @@ void leerTemperatura();
 
 void ControlarTemperaturaAntes19();
 void ControlarTemperaturaDespues19();
-void ControlAlarmaTemperaturaAntes19();
-void ControlAlarmaTemperaturaDespues19();
+
 
 //void ControlarTemperatura();
 

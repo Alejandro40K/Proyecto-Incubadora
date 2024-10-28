@@ -9,64 +9,61 @@
 // NOTAS: Funcion leerTemperatura, posiblemente redundante
 //////////////////////////////////////////////////////////////////
 
-//BIBLIOTECAS 
+// BIBLIOTECAS
 #include "Control_Temperatura.h"
 #include "Control_Alarma.h"
 #include "LCD.h"
+#include "Control_Ventilacion.h" // Incluye el archivo de control del ventilador
 
-//Definimos objetos funciones extern
+// Definimos objetos funciones extern
 OneWire ourWire(2);           
 DallasTemperature sensors(&ourWire);
 float temp;
 
 void IniciarSistemaTemperatura(){
-  delay(1000);
-  Serial.begin(9600);
-  sensors.begin();
-  iniciarAlarma();
+    delay(1000);
+    Serial.begin(9600);
+    sensors.begin();
+    iniciarAlarma();
+    iniciarVentiladores(); // Inicializa los ventiladores
 }
 
 void leerTemperatura(){
-  
-  sensors.requestTemperatures();   //Se envía el comando para leer la temperatura
-  temp= sensors.getTempCByIndex(0); //Se obtiene la temperatura en ºC
+    sensors.requestTemperatures();   // Se envía el comando para leer la temperatura
+    temp = sensors.getTempCByIndex(0); // Se obtiene la temperatura en ºC
 
-  if(temp == -127.00){
-    //Agregar mensaje de errir de sensor en LCD 
-    Serial.println("Error al leer del sensor de Temperatura DS18B20");
-  }else{
-      lcd.setCursor(0, 3);
-      lcd.print("Temperatura: ");
-      lcd.print(temp);
-      lcd.print(" C");
-  }
-  
-}
-
- void ControlarTemperaturaAntes19(){
-  leerTemperatura();
-  ControlAlarmaTemperaturaAntes19();
-}
- void ControlarTemperaturaDespues19(){
-  leerTemperatura();
-  ControlAlarmaTemperaturaDespues19() ;
-}
-  
-void ControlAlarmaTemperaturaAntes19() {
-    if (temp > 30) {
-        activarAlarma();  // Activa la alarma si la temperatura es alta
-        Serial.println("¡Alerta! Temperatura crítica");
+    if(temp == -127.00){
+        // Agregar mensaje de error de sensor en LCD 
+        Serial.println("Error al leer del sensor de Temperatura DS18B20");
     } else {
-        desactivarAlarma();
+        lcd.setCursor(0, 3);
+        lcd.print("Temperatura: ");
+        lcd.print(temp);
+        lcd.print(" C");
     }
 }
 
-void ControlAlarmaTemperaturaDespues19() {
+void ControlarTemperaturaAntes19() {
+    leerTemperatura();
+    if (temp > 30) {
+        activarAlarma();  // Activa la alarma si la temperatura es alta
+        Serial.println("¡Alerta! Temperatura crítica");
+        desactivarVentiladorCalefaccion(); // Apaga el ventilador si supera 30 °C
+    } else {
+        desactivarAlarma();
+        activarVentiladorCalefaccion(); // Enciende el ventilador si la temperatura está bajo 30 °C
+    }
+}
+
+void ControlarTemperaturaDespues19() {
+    leerTemperatura();
     if (temp > 29) {
         activarAlarma();  // Activa la alarma si la temperatura es alta
         Serial.println("¡Alerta! Temperatura crítica");
+        desactivarVentiladorCalefaccion(); // Apaga el ventilador si supera 29 °C
     } else {
         desactivarAlarma();
+        activarVentiladorCalefaccion(); // Enciende el ventilador si la temperatura está bajo 29 °C
     }
 }
 

@@ -8,21 +8,44 @@
 // Fecha de edicion: 17/10/2024
 //////////////////////////////////////////////////////////////////
 
-//BIBLIOTECAS 
+// BIBLIOTECAS 
 #include "Control_Ventilacion.h"
 
-/*
-const int pinVentilador = 4; // Define el pin del relé para el ventilador
+void iniciarVentiladores() {
+    pinMode(VentiladorCalefaccion, OUTPUT);
+    digitalWrite(VentiladorCalefaccion, HIGH); // Relé apagado
 
-void iniciarVentilador() {
-    pinMode(pinVentilador, OUTPUT);
-    desactivarVentilador();
+    pinMode(VentiladorEntrada, OUTPUT);
+    digitalWrite(VentiladorEntrada, HIGH); // Relé apagado
+
+    pinMode(VentiladorSalida, OUTPUT);
+    digitalWrite(VentiladorSalida, HIGH); // Relé apagado
 }
 
-void activarVentilador() {
-    digitalWrite(pinVentilador, HIGH);  // Activa el ventilador
+void activarVentiladorEntrada(){
+    digitalWrite(VentiladorEntrada, LOW);  // Activa el ventilador
+}
+void desactivarVentiladorEntrada(){
+    digitalWrite(VentiladorEntrada, HIGH); // Desactiva el ventilador
 }
 
-void desactivarVentilador() {
-    digitalWrite(pinVentilador, LOW);   // Desactiva el ventilador
-}*/
+void activarVentiladorSalida(){
+    digitalWrite(VentiladorSalida, LOW);  // Activa el ventilador
+}
+void desactivarVentiladorSalida(){ // Corrección aquí
+    digitalWrite(VentiladorSalida, HIGH);  // Desactiva el ventilador
+}
+
+void activarVentiladorCalefaccion(){
+    digitalWrite(VentiladorCalefaccion, LOW);  // Activa el ventilador de calefacción
+}
+void desactivarVentiladorCalefaccion(){
+    digitalWrite(VentiladorCalefaccion, HIGH);  // Desactiva el ventilador de calefacción
+}
+
+// Función de prueba
+void empezarVentilador(){
+    activarVentiladorEntrada();  // Cambiado de activarVentilador() a activarVentiladorEntrada()
+    delay(2000);
+    desactivarVentiladorEntrada(); // Cambiado de desactivarVentilador() a desactivarVentiladorEntrada()
+}

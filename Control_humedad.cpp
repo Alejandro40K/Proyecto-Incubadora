@@ -10,11 +10,12 @@
 //      Agregar capacitores del desacoplo para que se filtre el riuido generado por el relé
 //////////////////////////////////////////////////////////////////
 
+
 //BIBLIOTECAS
 #include "Control_humedad.h"
-#include "Control_Alarma.h"
 #include "Control_Ventilacion.h"
 #include "LCD.h"
+#include "Control_Alarma.h"
 
 //VARIABLES EXTERNAS 
 DHT dht(DHTPIN, DHTTYPE); 
@@ -26,47 +27,48 @@ float velocidad = 0.01715;
 
 //FUNCION PARA INICIAR EL HUMIDIFICADOR 
 void iniciarSistemaHumidificador(){
-  //Establecemos comunicacion serial
-  Serial.begin(9600);
-  //iniciamos el sensor DHT11
-  dht.begin();
-  // Configurar los pines del relé y del buzzer como salida
-  pinMode(relePin, OUTPUT);
-  // Inicialmente apagamos el humidificador y el buzzer
-  digitalWrite(relePin, HIGH); // Relé apagado
-  iniciarAlarma();
-  iniciarLCD();
+    //Establecemos comunicación serial
+    Serial.begin(9600);
+    //Iniciamos el sensor DHT11
+    dht.begin();
+    // Configurar los pines del relé y del buzzer como salida
+    pinMode(relePin, OUTPUT);
+    // Inicialmente apagamos el humidificador y el buzzer
+    digitalWrite(relePin, HIGH); // Relé apagado
+    iniciarLCD();
 }
 
 //FUNCION PARA LEER LA HUMEDAD CON EL SENSOR DHT
 void leerHumedad(){
-  //leemos humedad
-  humedad = dht.readHumidity();
+    //Leemos humedad
+    humedad = dht.readHumidity();
   
-  // Verificar si el sensor está funcionando correctamente
-  if (isnan(humedad)) {
-    Serial.println("Error al leer del sensor de humedad DHT11");
-  } else {
-    // Mostrar la humedad en el monitor serial
-    Serial.print("Humedad: ");
-    Serial.print(humedad);
-    Serial.println(" %");
-  }
-
+    // Verificar si el sensor está funcionando correctamente
+    if (isnan(humedad)) {
+        Serial.println("Error al leer del sensor de humedad DHT11");
+    } else {
+        lcd.setCursor(0, 2);
+        lcd.print("Humedad: ");
+        lcd.print(humedad);
+        lcd.print(" %");
+    }
 }
 
-
-//FUCNIONES PARA CONTROLAR EL HUMIDIFICADOR 
+//FUNCIONES PARA CONTROLAR EL HUMIDIFICADOR 
 void controlarHumidificadorAntes19() {
     leerHumedad();
+    
     // Si la humedad es mayor a 80%, se apaga el humidificador 
     if (humedad > 80) {
         digitalWrite(relePin, HIGH); 
         Serial.println("Humidificador Apagado");
 
-        // Verificar si se debe activar la alarma
+        // Activar alarma si la humedad es mayor a 85%
         if (humedad > 85) {
-            controlarAlarmaAntes19(); // Llamar a la función de control de alarma antes del día 19 
+            activarAlarma(); 
+            Serial.println("¡Alerta! Humedad crítica");
+        } else {
+            desactivarAlarma();
         }
     } 
     // Si la humedad es menor a 70%, enciende el humidificador 
@@ -76,9 +78,9 @@ void controlarHumidificadorAntes19() {
     }
 }
 
-
 void controlarHumidificadorDespues19() {
     leerHumedad();
+    
     // Si la humedad es mayor a 90%, se apaga el humidificador 
     if (humedad > 90) {
         digitalWrite(relePin, HIGH); 
@@ -90,22 +92,7 @@ void controlarHumidificadorDespues19() {
         Serial.println("Humidificador Encendido");
     }
     
-    controlarAlarmaDespues19(); // Llamar a la función de control de alarma después del día 19
-}
-
-//FUNCIONES PARA CONTROLAR LAS ALARMAS DEL HUMIDIFICADOR 
-void controlarAlarmaAntes19() {
-    // Alarma activada si la humedad es mayor a 87%
-    if (humedad > 85) {
-        activarAlarma();
-        Serial.println("¡Alerta! Humedad crítica");
-    } else {
-        desactivarAlarma();
-    }
-}
-
-void controlarAlarmaDespues19() {
-    // Cambia el umbral de alarma según el día de incubación
+    // Activar alarma si la humedad es mayor a 90%
     if (humedad > 90) {        
         activarAlarma();
         Serial.println("¡Alerta! Humedad crítica");
@@ -114,15 +101,14 @@ void controlarAlarmaDespues19() {
     }
 }
 
+/*
 //FUNCION PARA MOSTRAR LA HUMEDAD 
 void mostrarHumedad(){
-  //lcd.clear();
-  lcd.setCursor(0, 2);
-  lcd.print("Humedad: ");
-  lcd.print(humedad);
-  lcd.print(" %");
-}
-
+    lcd.setCursor(0, 2);
+    lcd.print("Humedad: ");
+    lcd.print(humedad);
+    lcd.print(" %");
+}*/
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 

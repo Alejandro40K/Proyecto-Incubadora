@@ -59,10 +59,10 @@ void actualizarEstadoIncubacion() {
     // Controlar la humedad dependiendo del día de incubación
     if (diaIncubacion > 18) {
         controlarHumidificadorDespues19();  // Control específico después del día 18
-        ControlAlarmaTemperaturaDespues19();
+        ControlarTemperaturaDespues19();
     } else {
         controlarHumidificadorAntes19();  // Control normal antes del día 18
-        ControlAlarmaTemperaturaAntes19();
+        ControlarTemperaturaAntes19();
     }
 }
 
@@ -82,7 +82,8 @@ void mostrarInformacion() {
     lcd.print(diasTranscurridos);
 
     // Llamamos a la funcion mostrarHumedad para mostrar la humedad
-    mostrarHumedad();  // Esto mostrará la humedad en la segunda línea
+    //mostrarHumedad();  // Esto mostrará la humedad en la segunda línea
+    leerHumedad();
     leerTemperatura();
 }
 
