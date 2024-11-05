@@ -22,6 +22,7 @@ void iniciarVentiladores() {
     digitalWrite(VentiladorSalida, HIGH); // Relé apagado
 }
 
+//VENTILADOR DE ENTRADA
 void activarVentiladorEntrada(){
     digitalWrite(VentiladorEntrada, LOW);  // Activa el ventilador
 }
@@ -29,6 +30,7 @@ void desactivarVentiladorEntrada(){
     digitalWrite(VentiladorEntrada, HIGH); // Desactiva el ventilador
 }
 
+//VENTILADOR DE SALIDA
 void activarVentiladorSalida(){
     digitalWrite(VentiladorSalida, LOW);  // Activa el ventilador
 }
@@ -36,6 +38,7 @@ void desactivarVentiladorSalida(){ // Corrección aquí
     digitalWrite(VentiladorSalida, HIGH);  // Desactiva el ventilador
 }
 
+//VENTILADOR DE CALEFACCION 
 void activarVentiladorCalefaccion(){
     digitalWrite(VentiladorCalefaccion, LOW);  // Activa el ventilador de calefacción
 }
@@ -43,9 +46,10 @@ void desactivarVentiladorCalefaccion(){
     digitalWrite(VentiladorCalefaccion, HIGH);  // Desactiva el ventilador de calefacción
 }
 
-// Función de prueba
+
+/* Función de prueba
 void empezarVentilador(){
-    activarVentiladorEntrada();  // Cambiado de activarVentilador() a activarVentiladorEntrada()
+    activarVentiladorEntrada();  
     delay(2000);
-    desactivarVentiladorEntrada(); // Cambiado de desactivarVentilador() a desactivarVentiladorEntrada()
-}
+    desactivarVentiladorEntrada(); 
+}*/

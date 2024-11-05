@@ -17,7 +17,7 @@
 #include "Control_humedad.h"
 #include "Control_Temperatura.h"
 #include "LCD.h"
-
+#include "Control_Ventilacion.h"
 //VARIABLES EXTERNAS 
 extern RTC_DS1307 rtc;
 extern DateTime fechaInicioIncubacion; 

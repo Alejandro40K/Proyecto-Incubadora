@@ -13,10 +13,7 @@
 
 // BIBLIOTECAS
 #include <Arduino.h>
-/* Incluimos la cabecera de arduino, por que como no estamos trabajando en in archivo .ino de arduino, 
-no tenemos las funciones básicas de este en los archivos .h y cpp. Cuando lo agregamos a estos archivos
-adquieren todas las funciones de arduino*/
-#define buzzerPin 6  // Pin 6 digital del arduino para el buzzer
+#define buzzerPin 4  // Pin 6 digital del arduino para el buzzer
 
 void iniciarAlarma();     // Inicializar el pin del buzzer
 void activarAlarma();     // Activar el buzzer

@@ -37,7 +37,8 @@ void IniciarRTC() {
   iniciarSistemaHumidificador();
   IniciarSistemaTemperatura();
   iniciarLCD();
-
+  //inicializarDriver();
+  //activarMotor();
 }
 
 
@@ -60,9 +61,15 @@ void actualizarEstadoIncubacion() {
     if (diaIncubacion > 18) {
         controlarHumidificadorDespues19();  // Control específico después del día 18
         ControlarTemperaturaDespues19();
+        //Sistema de ventilacion
+        activarVentiladorEntrada();
+        activarVentiladorSalida();
     } else {
         controlarHumidificadorAntes19();  // Control normal antes del día 18
         ControlarTemperaturaAntes19();
+        //sistema de ventilacion
+        activarVentiladorEntrada();
+        activarVentiladorSalida();
     }
 }
 
@@ -76,13 +83,9 @@ void mostrarInformacion() {
     Serial.println(diasTranscurridos);
 
     // Mostramos en la pantalla LCD
-    //lcd.clear();
     lcd.setCursor(0, 1);
     lcd.print("Dias: ");
     lcd.print(diasTranscurridos);
-
-    // Llamamos a la funcion mostrarHumedad para mostrar la humedad
-    //mostrarHumedad();  // Esto mostrará la humedad en la segunda línea
     leerHumedad();
     leerTemperatura();
 }
@@ -91,6 +94,11 @@ void mostrarInformacion() {
 void comenzarSistema(){
   actualizarEstadoIncubacion();
   mostrarInformacion(); 
+  //Falta agregar el control para que en los ltimos 2 dias no gire
+  //es una funcion probicional, luego se integrara al control del antes 
+  //y despues rtc
+  //iniciarSistemaMotor();
+
 }
 
 

@@ -43,6 +43,7 @@ void leerTemperatura(){
     }
 }
 
+//FUNCIONES DE CONTROL 
 void ControlarTemperaturaAntes19() {
     leerTemperatura();
     if (temp > 30) {

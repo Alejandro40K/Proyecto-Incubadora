@@ -23,8 +23,8 @@
 
 
 // PINES DEL ARDUINO UNO
-#define DHTPIN 8 	 // Pin para el sensor DHT11
-#define relePin 7    // Pin para controlar el rele
+#define DHTPIN 3 	 // Pin para el sensor DHT11
+#define relePin 5    // Pin para controlar el rele
 #define TRIGGER_PIN 11
 #define ECHO_PIN 12
 
@@ -42,19 +42,14 @@ extern float velocidad;
 
 void iniciarSistemaHumidificador();
 void leerHumedad();
-void comenzarProgramaHumidificador();
-void mostrarHumedad();
 //funciones para controlar el humidificador desde el RTC
 void controlarHumidificadorAntes19();
 void controlarHumidificadorDespues19();
-//funciones para activar una alarma de control 
-void controlarAlarmaDespues19();
-void controlarAlarmaAntes19();
 
 
 
-// Cambiar esta funcion a temperatura, Por definir
-// void controlVentilacion(); 
+//void comenzarProgramaHumidificador();//FUCNCION DE PRUEBA
+//void mostrarHumedad();
 //completar: enviara una señal cuando el nivel este bajo al numero de celular
 //void nivelTanque();
 //void iniciarUltrasonico();

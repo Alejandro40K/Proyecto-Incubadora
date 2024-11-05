@@ -18,24 +18,23 @@
 #include <Arduino.h>
 
 // PINS para los relés del ventilador
-#define VentiladorCalefaccion 3
-#define VentiladorEntrada 4
-#define VentiladorSalida 5
+#define VentiladorCalefaccion 6
+#define VentiladorEntrada 7
+#define VentiladorSalida 8
 
 // DEFINIMOS FUNCIONES 
 void iniciarVentiladores();
 
+//VENTILADOR DE ENTRADA
 void activarVentiladorEntrada();
 void desactivarVentiladorEntrada();
-
+//VENTILADOR DE SALIDA
 void activarVentiladorSalida();
 void desactivarVentiladorSalida();  // Corrección aquí
-
+//VENTILADOR DE CALEFACCION
 void activarVentiladorCalefaccion();
 void desactivarVentiladorCalefaccion();
 
-// Función de pruebas 
-void empezarVentilador();
 
 #endif
 

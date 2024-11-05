@@ -25,17 +25,18 @@ extern DallasTemperature;
 extern float temp;
 
 //DEFINIMOS FUNCIONES
+
 void IniciarSistemaTemperatura();
-void ControlAlarmaTemperatura();
-void comenzarProgramaTemperatura();
-void ControlResistenciaTermica();
 void leerTemperatura();
-//void mostrarTemperatura();
 
 void ControlarTemperaturaAntes19();
 void ControlarTemperaturaDespues19();
 
 
+
+//void comenzarProgramaTemperatura();
+//void ControlResistenciaTermica();
+//void mostrarTemperatura();
 //void ControlarTemperatura();
 
 #endif
