@@ -1,3 +1,5 @@
+
+
 //////////////////////////////////////////////////////////////////
 // Materia:  Seminario de Sensores y acondicionamiento de señales
 // Proyecto: Incubadora: Control de Sistema con RTC
@@ -6,14 +8,20 @@
 // Codigo:   218171511
 // Archivo:  Control_Sistema.cpp
 // Fecha de edicion: 21/10/2024
-// Nota: revisarsi el sitema no del reloj no se reinicia cada ves que  
-//       carga el arduino, agregar horas, minutos y segundos
-//      REVISAR NOTAS ALARMA UNIFICADA 
+
 //////////////////////////////////////////////////////////////////
+
 
 //BIBLIOTECAS 
 #include "Control_Sistema.h"
+#include "Control_Gases.h"
+#include "Control_Motor.h"
+#include "Control_humedad.h"
+#include "Control_Temperatura.h"
+#include "LCD.h"
+#include "Control_Ventilacion.h"
 
+bool cicloActivo = false; 
 RTC_DS1307 rtc;
 DateTime fechaInicioIncubacion;
 
@@ -33,12 +41,7 @@ void IniciarRTC() {
   }
   // Configura la fecha de inicio de la incubación
   // Ejemplo: 1 de octubre de 2024
-  fechaInicioIncubacion = DateTime(2024, 10, 3, 0, 0, 0);
-  iniciarSistemaHumidificador();
-  IniciarSistemaTemperatura();
-  iniciarLCD();
-  //inicializarDriver();
-  //activarMotor();
+  fechaInicioIncubacion = DateTime(2024, 11, 4, 0, 0, 0);
 }
 
 
@@ -50,32 +53,36 @@ int obtenerDiaIncubacion() {
   return duracion.days();  // Devuelve el número de días transcurridos
 }
 
-
-
-// Función que actualiza el estado de incubación (temperatura, alarma, etc.)
+//FUNCION NUEVA, HACER UN TEST DE CONTROL
+/*modificar lo de mostrar datos, para que a partir de dia 21 ya no muestre datos*/
 void actualizarEstadoIncubacion() {
-    // Primero obtenemos el día actual de incubación
     diaIncubacion = obtenerDiaIncubacion();
 
-    // Controlar la humedad dependiendo del día de incubación
-    if (diaIncubacion > 18) {
-        controlarHumidificadorDespues19();  // Control específico después del día 18
+    if (diaIncubacion <= 18) {
+        //controlarHumidificadorAntes19();
+        ControlarTemperaturaAntes19();
+        activarVentiladorEntrada();
+        activarVentiladorSalida();
+
+    } else if (diaIncubacion > 18 && diaIncubacion <= 21) {
+        //controlarHumidificadorDespues19();
         ControlarTemperaturaDespues19();
-        //Sistema de ventilacion
         activarVentiladorEntrada();
         activarVentiladorSalida();
     } else {
-        controlarHumidificadorAntes19();  // Control normal antes del día 18
-        ControlarTemperaturaAntes19();
-        //sistema de ventilacion
-        activarVentiladorEntrada();
-        activarVentiladorSalida();
+        // Ciclo completado después de 21 días
+        desactivarVentiladorCalefaccion();
+        desactivarVentiladorSalida();
+        desactivarVentiladorEntrada();
+
+        lcd.clear();
+        lcd.print("Ciclo finalizado");
+        cicloActivo = false;
     }
 }
 
-
-void mostrarInformacion() {
-    // Obtenemos el día actual de incubación
+void leerRTC(){
+  // Obtenemos el día actual de incubación
     int diasTranscurridos = obtenerDiaIncubacion();
 
     // Mostramos en el monitor serial (opcional)
@@ -86,25 +93,30 @@ void mostrarInformacion() {
     lcd.setCursor(0, 1);
     lcd.print("Dias: ");
     lcd.print(diasTranscurridos);
+}
+
+void mostrarInformacion() {
+    leerRTC();
     leerHumedad();
     leerTemperatura();
+    leerNivelTanque();
+    leerGases();
 }
 
 
 void comenzarSistema(){
   actualizarEstadoIncubacion();
-  mostrarInformacion(); 
-  //Falta agregar el control para que en los ltimos 2 dias no gire
-  //es una funcion probicional, luego se integrara al control del antes 
-  //y despues rtc
-  //iniciarSistemaMotor();
-
+  mostrarInformacion();
+  //iniciarSistemaMotor();  
 }
 
 
-/* SE USARA CUANDO SE TENGAN TODOS LOS DEMAS SENSORES Y MOTORES 
 void iniciarComponentes() {
-    iniciarSistemaHumidificador(); // Inicializa el DHT11, el relé, la alarma y el LCD
-    IniciarRTC(); // Inicializa el RTC
-}*/
+    iniciarSistemaHumidificador();
+    IniciarSistemaTemperatura();
+    iniciarLCD();
+    IniciarRTC();
+    //inicializarMotor(); 
+}
+
 

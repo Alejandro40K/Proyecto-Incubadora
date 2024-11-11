@@ -8,19 +8,19 @@
 // Fecha de edicion: 17/10/2024
 //////////////////////////////////////////////////////////////////
 
-//BIBLIOTECAS 
-
+//*******************************************************BIBLIOTECAS******************************************************************************//
 #include "Control_Alarma.h"
 
+//*****************************************************FUNCIONES BUZZER***************************************************************************//
 void iniciarAlarma() {
-  pinMode(buzzerPin, OUTPUT);  // Configura el pin como salida
-  desactivarAlarma();          // Asegura que la alarma esté apagada al inicio
+  pinMode(buzzerPin, OUTPUT); 
+  desactivarAlarma();         
 }
 
 void activarAlarma() {
-  tone(buzzerPin, 1000);       // Emite un sonido de 1000 Hz
+  tone(buzzerPin, 1000);    
 }
 
 void desactivarAlarma() {
-  noTone(buzzerPin);           // Apaga el sonido
+  noTone(buzzerPin);           
 }

@@ -1,3 +1,4 @@
+
 //////////////////////////////////////////////////////////////////
 // Materia:  Seminario de Sensores y acondicionamiento de señales
 // Proyecto: Incubadora: Control de Sistema con RTC
@@ -14,13 +15,11 @@
 // BIBLIOTECAS
 #include <Arduino.h>
 #include <RTClib.h>
-#include "Control_humedad.h"
-#include "Control_Temperatura.h"
-#include "LCD.h"
-#include "Control_Ventilacion.h"
+
 //VARIABLES EXTERNAS 
 extern RTC_DS1307 rtc;
 extern DateTime fechaInicioIncubacion; 
+
 
 void IniciarRTC();
 int obtenerDiaIncubacion();
@@ -28,5 +27,7 @@ void actualizarEstadoIncubacion();
 void mostrarInformacion();
 //funcion para comensar el sistema
 void comenzarSistema();
-
+//Funcion para inicializar todos los componentes del sistema
+void iniciarComponentes();
+void leerRTC();
 #endif

@@ -6,26 +6,27 @@
 // Codigo:   218171511
 // Archivo:  Control_humedad.cpp
 // Fecha de edicion: 15/10/2024
-// Nota: 
-//      Agregar capacitores del desacoplo para que se filtre el riuido generado por el relé
 //////////////////////////////////////////////////////////////////
 
-
-//BIBLIOTECAS
+//******************************************************************BIBLIOTECAS**********************************************************************//
 #include "Control_humedad.h"
 #include "Control_Ventilacion.h"
 #include "LCD.h"
 #include "Control_Alarma.h"
 
-//VARIABLES EXTERNAS 
+//****************************************************************DEFINIMOS OBJETOS******************************************************************//
 DHT dht(DHTPIN, DHTTYPE); 
-float humedad = 0; 
+
+//**************************************************************DEFINIMOS VARIABLES******************************************************************//
+float humidity = 0; 
 long tiempo;
 int distancia;
 int nueva_distancia = 0;
 float velocidad = 0.01715; 
+const float distanciaMaxima = 10.0;  // Distancia máxima cuando el tanque está lleno (en cm)
+const float distanciaMinima = 0.0;   // Distancia mínima cuando el tanque está vacío (en cm)
 
-//FUNCION PARA INICIAR EL HUMIDIFICADOR 
+//*********************************************************FUNCIONES PARA EL SENSOR DE HUMEDAD*******************************************************//
 void iniciarSistemaHumidificador(){
     //Establecemos comunicación serial
     Serial.begin(9600);
@@ -36,24 +37,26 @@ void iniciarSistemaHumidificador(){
     // Inicialmente apagamos el humidificador y el buzzer
     digitalWrite(relePin, HIGH); // Relé apagado
     iniciarLCD();
+    iniciarUltrasonico();
 }
 
-//FUNCION PARA LEER LA HUMEDAD CON EL SENSOR DHT
 void leerHumedad(){
     //Leemos humedad
-    humedad = dht.readHumidity();
+    humidity = dht.readHumidity();
   
     // Verificar si el sensor está funcionando correctamente
-    if (isnan(humedad)) {
+    if (isnan(humidity)) {
+        lcd.setCursor(0, 2);
+        lcd.print("Hr:Error");
         Serial.println("Error al leer del sensor de humedad DHT11");
     } else {
         lcd.setCursor(0, 2);
-        lcd.print("Humedad: ");
-        lcd.print(humedad);
-        lcd.print(" %");
+        lcd.print("Hr:");
+        lcd.print(humidity);
+        lcd.print("%");
     }
 }
-
+/*
 //FUNCIONES PARA CONTROLAR EL HUMIDIFICADOR 
 void controlarHumidificadorAntes19() {
     leerHumedad();
@@ -100,31 +103,11 @@ void controlarHumidificadorDespues19() {
         desactivarAlarma();
     }
 }
-
-/*
-//FUNCION PARA MOSTRAR LA HUMEDAD 
-void mostrarHumedad(){
-    lcd.setCursor(0, 2);
-    lcd.print("Humedad: ");
-    lcd.print(humedad);
-    lcd.print(" %");
-}*/
-////////////////////////////////////////////////////////////////////////////////////////////////
+*/
 
 
-/* para comprobar el funcionamiento dle humidificador
-void comenzarProgramaHumidificador(){
 
-  iniciarSistemaHumidificador();
-  leerHumedad();
-  controlarHumidificadorAntes19();
-  //controlarAlarmaHumidificador();
-  mostrarHumedad();
-}*/
-
-
-/*
-// Funciones del ultrasónico por definir 
+//*********************************************************FUNCIONES PARA EL SENSOR ULTRASONICO******************************************************//
 void iniciarUltrasonico(){
   // Transmisor de onda ultrasonica
   pinMode(TRIGGER_PIN, OUTPUT); 
@@ -133,15 +116,7 @@ void iniciarUltrasonico(){
   Serial.begin(9600);
 }
 
-/*Esta funcion (nivelTanque) será modificada luego para enviar un mensaje por 
-celular del nivel de agua, tendra 3 estados, por ejemplo si el 
-tanque tiene 10 cm de profundidad, donde 8 son los deseados al maximo, 
-y cuatro es la mitad y 2 es poca (con mensaje de alerta de almacenaje),  
-enviara todos esos datos, por ejmplo, por semana (a esepcion de los 
-mensjes de capacidad baja, que seran enviados cuando sea) al celular*/
-
-/*
-void nivelTanque(){
+void leerNivelTanque(){
   // Apagamos el sensor por si está encendido 
   digitalWrite(TRIGGER_PIN, LOW);
   delayMicroseconds(2);
@@ -152,15 +127,33 @@ void nivelTanque(){
   digitalWrite(TRIGGER_PIN, LOW);
   // `pulseIn` lee un pulso en estado alto, regresará la duración del pulso
   tiempo = pulseIn(ECHO_PIN, HIGH);
-  distancia = (tiempo * velocidad);
+  distancia = (tiempo * velocidad);  // Calculamos la distancia en cm
 
-  Serial.print("Distancia: ");
-  Serial.print(distancia);
-  Serial.println(" cm");
+  // Calculamos el porcentaje de lleno del tanque
+  float porcentajeLleno = map(distancia, distanciaMaxima, distanciaMinima, 0, 100);  // Mapea la distancia a porcentaje
+  
+  // Aseguramos que el porcentaje esté dentro del rango [0, 100]
+  if (porcentajeLleno < 0) porcentajeLleno = 0;
+  if (porcentajeLleno > 100) porcentajeLleno = 100;
 
-  nueva_distancia = distancia;
+  lcd.setCursor(10, 1);
+  lcd.print("Pt:");
+  lcd.print(porcentajeLleno);
+  lcd.print("%");
+
 
   delay(500);  
 }
 
-*/
+
+// FUNCION PARA PRUEBAS
+/*
+void comenzarProgramaHumidificador(){
+
+  iniciarSistemaHumidificador();
+  /*leerHumedad();
+  controlarHumidificadorAntes19();
+  //controlarAlarmaHumidificador();
+  mostrarHumedad();*/
+//}
+

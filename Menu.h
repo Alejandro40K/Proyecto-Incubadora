@@ -12,10 +12,43 @@
 
 #ifndef MENU_H
 #define MENU_H
+
+//BIBLIOTECAS
 #include <Arduino.h>
-#include "Control_Sistema.h"
+#include <EEPROM.h>
 
+//BOTONES PARA EL MENU
+#define upButton A0
+#define downButton A1
+#define selectButton 12
+#define backButton 13
+
+//FUNCIONES PARA COMENZAR EL PROGRAMA
 void iniciarSistemaTotal();
-void mostrarmanu();
+void ComenzarSistemaTotal();
 
+//FUNCIONES PARA LA MEMORIA EEPROM
+void leerParametrosEEPROM();
+void guardarParametrosEEPROM();
+void mostrarMargenesHumedad();
+void mostrarMargenesTemperatura();
+
+//FUNCIONES PARA EL SUBMENU
+void configurarHumedad();
+void configurarTemperatura();
+void configurarDias();
+void mostrarEstado();
+
+//FUNCIONES DEL MENU
+void displayMainMenu();
+void handleMenu();
+void mostrarBienvenida();
+void iniciarBotones();
+
+//FUNCIONES DE CONTROL 
+void controlarHumidificador();
+void ControlarTemperatura();
+
+//void comenzarProgramaHumidificador();
 #endif
+

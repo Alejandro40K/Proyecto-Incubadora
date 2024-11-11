@@ -13,12 +13,14 @@
 
 // BIBLIOTECAS
 #include <Arduino.h>
-#define buzzerPin 4  // Pin 6 digital del arduino para el buzzer
 
-void iniciarAlarma();     // Inicializar el pin del buzzer
-void activarAlarma();     // Activar el buzzer
-void desactivarAlarma();  // Desactivar el buzzer
+//PINES PARA EL BUZZER
+#define buzzerPin 4  
 
+//FUNCIONES PARA EL BUZZER
+void iniciarAlarma();    
+void activarAlarma();     
+void desactivarAlarma();  
 
 #endif
 

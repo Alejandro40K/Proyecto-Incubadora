@@ -1,25 +1,24 @@
 //////////////////////////////////////////////////////////////////
 // Materia:  Seminario de Sensores y acondicionamiento de señales
-// Proyecto: Incubadora: Pantalla LCD 4x24
+// Proyecto  Incubadora
 // Profesor: CARLOS ALBERTO SANCHEZ ROMERO
 // Alumno:   Alejando Orozco Romo
 // Codigo:   218171511
-// Archivo:  LCD.h
-// Fecha de edicion: 22/10/2024
+// Archivo:  Control_Gases.h
+// Fecha de edicion: 05/11/2024
 //////////////////////////////////////////////////////////////////
 
-#ifndef LCD_H
-#define LCD_H
+#ifndef CONTROL_GASES_H
+#define CONTROL_GASES_H
 
-// BIBLIOTECAS
+//BIBLIOTECAS
 #include <Arduino.h>
-#include <Wire.h> 
-#include <LiquidCrystal_I2C.h>
 
-//DEFINIMOS VARIABLES EXTERNAS
-extern LiquidCrystal_I2C lcd;
+//PINES PARA EL SENSOR
+#define MQ7Pin A3
 
-//DECLARAMOS FUNCIONES 
-void iniciarLCD();
+//FUNCION PARA EL SENSOR DE GAS
+void iniciarControlGases();
+void leerGases();
 
 #endif

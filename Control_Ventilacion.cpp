@@ -47,7 +47,8 @@ void desactivarVentiladorCalefaccion(){
 }
 
 
-/* Función de prueba
+//Función de prueba
+/*
 void empezarVentilador(){
     activarVentiladorEntrada();  
     delay(2000);

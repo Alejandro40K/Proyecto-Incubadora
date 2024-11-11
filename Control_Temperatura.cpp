@@ -9,42 +9,46 @@
 // NOTAS: Funcion leerTemperatura, posiblemente redundante
 //////////////////////////////////////////////////////////////////
 
-// BIBLIOTECAS
+//***********************************************************BIBLIOTECAS***************************************************************************//
 #include "Control_Temperatura.h"
 #include "Control_Alarma.h"
+#include "Control_Ventilacion.h"
 #include "LCD.h"
-#include "Control_Ventilacion.h" // Incluye el archivo de control del ventilador
 
-// Definimos objetos funciones extern
+//***********************************************************DEFINIMOS OBJETOS*********************************************************************//
 OneWire ourWire(2);           
 DallasTemperature sensors(&ourWire);
+
+//********************************************************DEFINICION VARIABLES*********************************************************************//
 float temp;
 
+//**********************************************************FUNCIONES TEMPERATURA******************************************************************//
 void IniciarSistemaTemperatura(){
     delay(1000);
     Serial.begin(9600);
     sensors.begin();
     iniciarAlarma();
-    iniciarVentiladores(); // Inicializa los ventiladores
+    iniciarVentiladores(); 
 }
 
 void leerTemperatura(){
-    sensors.requestTemperatures();   // Se envía el comando para leer la temperatura
-    temp = sensors.getTempCByIndex(0); // Se obtiene la temperatura en ºC
+    sensors.requestTemperatures();   
+    temp = sensors.getTempCByIndex(0);
 
     if(temp == -127.00){
-        // Agregar mensaje de error de sensor en LCD 
+        lcd.setCursor(0, 3);
+        lcd.print("Ta:Error");
         Serial.println("Error al leer del sensor de Temperatura DS18B20");
     } else {
         lcd.setCursor(0, 3);
-        lcd.print("Temperatura: ");
+        lcd.print("Ta:");
         lcd.print(temp);
-        lcd.print(" C");
+        lcd.print("C");
     }
 }
 
 //FUNCIONES DE CONTROL 
-void ControlarTemperaturaAntes19() {
+/*void ControlarTemperaturaAntes19() {
     leerTemperatura();
     if (temp > 30) {
         activarAlarma();  // Activa la alarma si la temperatura es alta
@@ -66,20 +70,12 @@ void ControlarTemperaturaDespues19() {
         desactivarAlarma();
         activarVentiladorCalefaccion(); // Enciende el ventilador si la temperatura está bajo 29 °C
     }
-}
+}*/
 
 
+
+// FUNCION PARA HACER PRUEBAS 
 /*
-void mostrarTemperatura(){
-  //lcd.clear();
-  lcd.setCursor(0, 3);
-  lcd.print("Temperatura: ");
-  lcd.print(temp);
-  lcd.print(" C");
-}
-/
-
-/* PARA HACER PRUEBAS 
 void comenzarProgramaTemperatura(){
   ControlarTemperatura();
   ControlAlarmaTemperatura();
@@ -89,7 +85,6 @@ void comenzarProgramaTemperatura(){
 //Por definir
 void ControlResistenciaTermica(){
 
-}
+}*/
 
 
-*/

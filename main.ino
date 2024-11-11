@@ -17,7 +17,9 @@
 
 
 #include "Menu.h"
+#include "Control_humedad.h"
 
+/*
 void setup() {
   iniciarSistemaTotal();
 }
@@ -26,4 +28,17 @@ void setup() {
 void loop() {
   mostrarmanu();
   delay(2000);
+}*/
+
+void setup() {
+  
+  iniciarSistemaTotal();
+
+}
+
+void loop() {
+  // Manejar el menú
+  handleMenu();
+  controlarHumidificador();
+  ControlarTemperatura();
 }
