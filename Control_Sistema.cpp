@@ -11,7 +11,7 @@
 
 //////////////////////////////////////////////////////////////////
 
-
+/*
 //BIBLIOTECAS 
 #include "Control_Sistema.h"
 #include "Control_Gases.h"
@@ -39,9 +39,8 @@ void IniciarRTC() {
     Serial.println("El RTC ha perdido el poder, ajustando el reloj...");
     rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));  // Ajusta a la fecha y hora actual de la compilación
   }
-  // Configura la fecha de inicio de la incubación
-  // Ejemplo: 1 de octubre de 2024
-  fechaInicioIncubacion = DateTime(2024, 11, 4, 0, 0, 0);
+
+  //fechaInicioIncubacion = DateTime(2024, 11, 11, 0, 0, 0);
 }
 
 
@@ -54,7 +53,6 @@ int obtenerDiaIncubacion() {
 }
 
 //FUNCION NUEVA, HACER UN TEST DE CONTROL
-/*modificar lo de mostrar datos, para que a partir de dia 21 ya no muestre datos*/
 void actualizarEstadoIncubacion() {
     diaIncubacion = obtenerDiaIncubacion();
 
@@ -119,4 +117,4 @@ void iniciarComponentes() {
     //inicializarMotor(); 
 }
 
-
+*/

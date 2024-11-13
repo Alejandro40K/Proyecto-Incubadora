@@ -13,11 +13,19 @@
 #include "Menu.h"
 #include "Control_Sistema.h"
 #include "Control_humedad.h"
-#include "Control_Temperatura.h"
 #include "Control_Ventilacion.h"
 #include "Control_Alarma.h"
 #include "Control_Gases.h"
 #include "LCD.h"
+
+//***********************************************************DEFINIMOS OBJETOS*********************************************************************//
+
+//Temperatura
+OneWire ourWire(2);           
+DallasTemperature sensors(&ourWire);
+//RTC DS1307
+RTC_DS1307 rtc;
+DateTime fechaInicioIncubacion;
 
 //***************************************************DEFINICION VARIABLES*************************************************************************//
 
@@ -33,12 +41,19 @@ int lastSelectState = HIGH;
 int lastBackState = HIGH;
 // Variables de humedad 
 float humedad = 0; 
-int humedadMin = 60;  // Valor por defecto mínimo de humedad
+int humedadMin = 40;  // Valor por defecto mínimo de humedad
 int humedadMax = 95;  // Valor por defecto máximo de humedad
 // Variables de temperatura
-float temperatura = 0;
+//float temperatura = 0;
 int temperaturaMin = 24;
 int temperaturaMax = 37;
+float temp =0;
+// Variables RTC dias 
+bool cicloActivo = false; 
+int diaIncubacion = 0;
+int diasMaximos = 37;
+int diasMinimos = 17;
+int dias =0;
 
 //************************************************FUNCIONES PARA INICIAR SISTEMA*******************************************************************//
 
@@ -47,15 +62,42 @@ void iniciarSistemaTotal(){
   leerParametrosEEPROM();
   iniciarSistemaHumidificador();
   IniciarSistemaTemperatura();
+  IniciarRTC();
   mostrarBienvenida();
   displayMainMenu();
   //iniciarComponentes();
 }
+
 void ComenzarSistemaTotal(){
   //comenzarSistema();
   handleMenu();
   controlarHumidificador();
   ControlarTemperatura();
+}
+
+//******************************************************FUNCIONES RTC DIAS*************************************************************************//
+
+void IniciarRTC() {
+  if (!rtc.begin()) {
+    Serial.println("No se puede encontrar el RTC");
+    while (1);
+  }
+
+  if (!rtc.isrunning()) {
+    Serial.println("El RTC ha perdido el poder, ajustando el reloj...");
+    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));  // Ajusta a la fecha y hora actual de la compilación
+  }
+
+  // Configura la fecha de inicio de la incubación
+  fechaInicioIncubacion = DateTime(2024, 11, 11, 0, 0, 0);  // Puedes modificar esta fecha según necesites
+}
+
+// Función para calcular cuántos días han pasado desde el inicio de la incubación
+int obtenerDiaIncubacion() {
+  DateTime ahora = rtc.now();  // Obtiene la fecha y hora actual del RTC
+  TimeSpan duracion = ahora - fechaInicioIncubacion;  // Calcula la diferencia de tiempo
+  diaIncubacion = duracion.days();  // Guarda el número de días transcurridos en la variable
+  return diaIncubacion;
 }
 
 //******************************************************FUNCIONES EEPROM***************************************************************************//
@@ -66,22 +108,24 @@ void leerParametrosEEPROM() {
     EEPROM.get(0, humedadMax);
     // Leer `temperaturaMax` desde la dirección 2
     EEPROM.get(2, temperaturaMax);
+    // Leer `diasMaximos` desde la dirección 16
+    EEPROM.get(16,diasMaximos);
 
     // Validar valores leídos y establecer valores predeterminados si están fuera del rango
     if (humedadMax < humedadMin || humedadMax > 95) humedadMax = 95;
     if (temperaturaMax < temperaturaMin || temperaturaMax > 37) temperaturaMax = 37;
+    if (diasMaximos < diasMinimos || diasMaximos > 37) diasMaximos = 37;
 }
 
 // Función para guardar en la EEPROM
 void guardarParametrosEEPROM() {
     EEPROM.put(0, humedadMax);       // Guardar `humedadMax` en la dirección 0
     EEPROM.put(2, temperaturaMax);   // Guardar `temperaturaMax` en la dirección 2
+    EEPROM.put(16, diasMaximos);   // Guardar `diaIncubacion` en la dirección 16
 }
-
 
 // Funciones para mostrar los márgenes configurables
 void mostrarMargenesHumedad() {
-  //lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Humedad Maxima: ");
   lcd.print(humedadMax);
@@ -95,7 +139,6 @@ void mostrarMargenesHumedad() {
 }
 
 void mostrarMargenesTemperatura() {
-  //lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Temp Maxima: ");
   lcd.print(temperaturaMax);
@@ -107,7 +150,72 @@ void mostrarMargenesTemperatura() {
   lcd.setCursor(0, 3);
   lcd.print("Select para Guardar");
 }
+
+void mostrarMargenesDias() {
+  lcd.setCursor(0, 0);
+  lcd.print("Dias Incubacion: ");
+  lcd.print(diasMaximos);
+  lcd.setCursor(0, 1);
+  lcd.print("Dias Minimos: ");
+  lcd.print(diasMinimos);
+  lcd.setCursor(0, 2);
+  lcd.print("Usar UP/DOWN");
+  lcd.setCursor(0, 3);
+  lcd.print("Select para Guardar");
+}
 //******************************************************FUNCIONES SUBMENU**************************************************************************//
+
+void configurarDias() {
+    lcd.clear();
+    mostrarMargenesDias();  
+    // Mientras el menú de configuración de humedad esté activo
+    while (currentMenu == 3) {  
+        // Aumentar la humedad con el botón UP
+        if (digitalRead(upButton) == LOW) {
+            diasMaximos = diasMaximos + 1;
+            if (diasMaximos > 37) {  // Limitar la humedad máxima a 100
+                diasMaximos = 37;
+            }
+            delay(150);  // Retraso para evitar rebotes
+        }
+        // Disminuir la humedad con el botón DOWN
+        if (digitalRead(downButton) == LOW) {
+            diasMaximos = diasMaximos - 1;
+            if (diasMaximos < diasMinimos + 1) {  // Asegurar que humedadMax no sea menor que humedadMin + 1
+                diasMaximos = diasMinimos + 1;
+            }
+            delay(150);  // Retraso para evitar rebotes
+        }
+        // Guardar el valor de humedadMax al presionar SELECT
+        if (digitalRead(selectButton) == LOW) {
+            guardarParametrosEEPROM();  // Guardar solo humedadMax en la EEPROM
+            lcd.clear();
+            lcd.setCursor(0, 0);
+            lcd.print("Tiempo de incubacion");
+            lcd.setCursor(0, 1);
+            lcd.print("Guardado con exito!");
+            lcd.setCursor(0, 2);
+            lcd.print("Duracion: ");
+            lcd.print(diasMaximos);
+            lcd.setCursor(14, 2);
+            lcd.print("Dias");
+            delay(2500);  // Mostrar mensaje de guardado por 2 segundos
+            lcd.clear();
+        }
+        // Comprobar si se presionó el botón BACK
+        if (digitalRead(backButton) == LOW) {
+            lcd.clear();
+            lcd.setCursor(0, 0);
+            lcd.print("Regresando..");
+            lcd.setCursor(0, 1);
+            lcd.print("Pulse Otra vez");
+            delay(2000);  // Mostrar mensaje de regreso por 2 segundos
+            currentMenu = 0;  // Volver al menú principal
+            break;  // Salir del bucle y regresar al menú principal
+        }
+    mostrarMargenesDias();//actualiza pantalla
+    }
+}
 
 void configurarHumedad() {
     lcd.clear();
@@ -155,8 +263,6 @@ void configurarHumedad() {
     mostrarMargenesHumedad();// Actualizar la pantalla
     }
 }
-
-
 
 void configurarTemperatura() {
     lcd.clear();
@@ -206,46 +312,20 @@ void configurarTemperatura() {
     }
 }
 
-/*
-// Función para mostrar los datos actuales
-void configurarTemperatura() {
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Configurar Tem:");
-  delay(2000); // Mostrar datos por 2 segundos
-  currentMenu = 0; // Volver al menú principal
-  delay(200); 
-}*/
-
-// Función para iniciar incubación
-void configurarDias() {
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Configurar Dias:");
-  delay(2000); // Simula iniciar el proceso
-  currentMenu = 0; // Volver al menú principal
-}
-
 // Función para mostrar el estado del sistema
 void mostrarEstado() {
   lcd.clear();
   leerHumedad();
-  leerTemperatura();
+  lcd.setCursor(0, 1);
+  lcd.print("Ta:");
+  lcd.print(temp);
+  lcd.print("C");
   leerNivelTanque();
   leerGases();
+  leerRTC();
   delay(2000); // Mostrar por 2 segundos
   currentMenu = 0; // Volver al menú principal
 }
-/*
-void mostrarEstado() {
-  lcd.clear();
-  while (currentMenu == 0) { // Suponiendo que el estado "1" es para mostrar estado
-    leerHumedad();           // Actualiza la lectura de humedad
-    leerTemperatura();       // Actualiza la lectura de temperatura
-    delay(500);              // Pausa corta para evitar parpadeo excesivo en la pantalla
-  }
-}*/
-
 
 //******************************************************FUNCIONES DEL MENU*************************************************************************//
 
@@ -332,7 +412,7 @@ void iniciarBotones(){
 }
 
 
-//******************************************************FUNCIONES DE CONTROL***********************************************************************//
+//******************************************************FUNCIONES DE CONTROL HUMEDAD***************************************************************//
 
 void controlarHumidificador() {
     //leerHumedad();
@@ -356,25 +436,53 @@ void controlarHumidificador() {
   }
 }
 
-void ControlarTemperatura() {
+//**********************************************************FUNCIONES CONTROL TEMPERATURA**********************************************************//
 
-    if (temperatura > temperaturaMax) {
-        activarAlarma();  // Activa la alarma si la temperatura es alta
-        Serial.println("¡Alerta! Temperatura crítica");
-        desactivarVentiladorCalefaccion(); // Apaga el ventilador si supera 30 °C
+void IniciarSistemaTemperatura() {
+    delay(1000);
+    sensors.begin();
+    pinMode(VentiladorCalefaccion, OUTPUT);
+    digitalWrite(VentiladorCalefaccion, HIGH); // Relé apagado
+}
+
+// Leer temperatura
+float leerTemperatura() {
+    sensors.requestTemperatures();
+    temp = sensors.getTempCByIndex(0);
+    return temp;
+}
+
+// Control de la temperatura
+void ControlarTemperatura() {
+  leerTemperatura();
+    if (temp > temperaturaMax) {
+        digitalWrite(VentiladorCalefaccion, HIGH); // Apaga el ventilador
         Serial.println("Ventilador Apagado");
+    }else{
+        digitalWrite(VentiladorCalefaccion, LOW); // Enciende el ventilador
+        Serial.println("Ventilador Encendido");
+    }
+    if (temp > 38) {        
+        activarAlarma();
+        Serial.println("¡Alerta! Temperatura crítica");
     } else {
         desactivarAlarma();
-        Serial.println("Ventilador Encendido");
-        activarVentiladorCalefaccion(); // Enciende el ventilador si la temperatura está bajo 30 °C
     }
 }
 
+//**************************************************************FUNCIONES CONTROL RTC**************************************************************//
 
-/*
-void comenzarProgramaHumidificador(){
 
-  iniciarSistemaHumidificador();
-  //controlarHumidificadorAntes19();
+void leerRTC(){
+  // Obtenemos el día actual de incubación
+    int diasTranscurridos = obtenerDiaIncubacion();
 
-}*/
+    // Mostramos en el monitor serial (opcional)
+    Serial.print("Dias transcurridos desde el inicio de la incubacion: ");
+    Serial.println(diasTranscurridos);
+
+    // Mostramos en la pantalla LCD
+    lcd.setCursor(0, 2);
+    lcd.print("Dias: ");
+    lcd.print(diasTranscurridos);
+}

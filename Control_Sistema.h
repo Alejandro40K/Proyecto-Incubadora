@@ -8,7 +8,7 @@
 // Archivo:  Control_Ventilacion.h
 // Fecha de edicion: 21/10/2024
 //////////////////////////////////////////////////////////////////
-
+/*
 #ifndef CONTROL_SISTEMA_H
 #define CONTROL_SISTEMA_H
 
@@ -22,7 +22,7 @@ extern DateTime fechaInicioIncubacion;
 
 
 void IniciarRTC();
-int obtenerDiaIncubacion();
+//int obtenerDiaIncubacion();
 void actualizarEstadoIncubacion();
 void mostrarInformacion();
 //funcion para comensar el sistema
@@ -30,4 +30,4 @@ void comenzarSistema();
 //Funcion para inicializar todos los componentes del sistema
 void iniciarComponentes();
 void leerRTC();
-#endif
+#endif*/

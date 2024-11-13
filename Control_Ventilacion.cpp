@@ -12,9 +12,7 @@
 #include "Control_Ventilacion.h"
 
 void iniciarVentiladores() {
-    pinMode(VentiladorCalefaccion, OUTPUT);
-    digitalWrite(VentiladorCalefaccion, HIGH); // Relé apagado
-
+   
     pinMode(VentiladorEntrada, OUTPUT);
     digitalWrite(VentiladorEntrada, HIGH); // Relé apagado
 
@@ -37,15 +35,6 @@ void activarVentiladorSalida(){
 void desactivarVentiladorSalida(){ // Corrección aquí
     digitalWrite(VentiladorSalida, HIGH);  // Desactiva el ventilador
 }
-
-//VENTILADOR DE CALEFACCION 
-void activarVentiladorCalefaccion(){
-    digitalWrite(VentiladorCalefaccion, LOW);  // Activa el ventilador de calefacción
-}
-void desactivarVentiladorCalefaccion(){
-    digitalWrite(VentiladorCalefaccion, HIGH);  // Desactiva el ventilador de calefacción
-}
-
 
 //Función de prueba
 /*

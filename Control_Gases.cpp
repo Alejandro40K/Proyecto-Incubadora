@@ -24,9 +24,9 @@ void iniciarControlGases(){
 void leerGases() {
   valorSensor = analogRead(MQ7Pin);
   float ppm = (valorSensor / 1023.0) * 5000.0;  
-  lcd.setCursor(10, 2);
+  lcd.setCursor(10, 1);
   lcd.print("CO:");
   lcd.print(ppm);
-  lcd.setCursor(13, 3);
+  lcd.setCursor(13, 2);
   lcd.print("ppm");
 }

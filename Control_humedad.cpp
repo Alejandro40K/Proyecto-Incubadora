@@ -46,11 +46,11 @@ void leerHumedad(){
   
     // Verificar si el sensor está funcionando correctamente
     if (isnan(humidity)) {
-        lcd.setCursor(0, 2);
+        lcd.setCursor(0, 0);
         lcd.print("Hr:Error");
         Serial.println("Error al leer del sensor de humedad DHT11");
     } else {
-        lcd.setCursor(0, 2);
+        lcd.setCursor(0, 0);
         lcd.print("Hr:");
         lcd.print(humidity);
         lcd.print("%");
@@ -136,7 +136,7 @@ void leerNivelTanque(){
   if (porcentajeLleno < 0) porcentajeLleno = 0;
   if (porcentajeLleno > 100) porcentajeLleno = 100;
 
-  lcd.setCursor(10, 1);
+  lcd.setCursor(10, 0);
   lcd.print("Pt:");
   lcd.print(porcentajeLleno);
   lcd.print("%");

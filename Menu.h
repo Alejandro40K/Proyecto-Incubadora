@@ -16,12 +16,21 @@
 //BIBLIOTECAS
 #include <Arduino.h>
 #include <EEPROM.h>
+#include <RTClib.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
 
 //BOTONES PARA EL MENU
-#define upButton A0
-#define downButton A1
+#define upButton A1
+#define downButton A3
 #define selectButton 12
 #define backButton 13
+#define VentiladorCalefaccion 6
+
+//DEFINIMOS VARIABLES EXTERNAS
+extern OneWire;
+extern DallasTemperature;
+extern float temp;
 
 //FUNCIONES PARA COMENZAR EL PROGRAMA
 void iniciarSistemaTotal();
@@ -46,9 +55,20 @@ void mostrarBienvenida();
 void iniciarBotones();
 
 //FUNCIONES DE CONTROL 
+//Humidificador
 void controlarHumidificador();
+//Temperatura
+void IniciarSistemaTemperatura();
 void ControlarTemperatura();
+float leerTemperatura();
+//RTC dias 
+int obtenerDiaIncubacion() ;
+void IniciarRTC();
+void configurarDias();
+void leerRTC();
 
+//FUNCIONES DE PRUEBA
 //void comenzarProgramaHumidificador();
+
 #endif
 

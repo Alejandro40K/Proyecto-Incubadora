@@ -48,3 +48,12 @@ PRIORIDADES:
 4) MENU: agregar el menu con 2 botones o un joistik
 5) Agregar el control de la tarjeta sim para enviar mensajes al celular. 
 6) cabiar los encabesados de todos los archivos por el que esta hasta arriba de este readme.
+
+
+PENDIENTE 11/11/24
+
+ARCHIVO: Main.cpp
+
+1) Mejorar la implementacion del control temperatura, posiblemente implementar el control del ventilador calefacciomn directamente en el control 
+temoeratura a la misma forma que el humidifiador. 
+eliminr redundamcia en funciones inicializar

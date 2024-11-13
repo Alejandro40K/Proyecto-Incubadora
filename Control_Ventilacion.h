@@ -16,16 +16,11 @@
 #include <Arduino.h>
 
 // PINS PARA LOS RELES DE CALEFACCION Y VENTILACION
-#define VentiladorCalefaccion 6
 #define VentiladorEntrada 7
 #define VentiladorSalida 8
 
 //FUNCION PARA INICIAR VENTILADORES 
 void iniciarVentiladores();
-
-//VENTILADOR DE ENTRADA
-void activarVentiladorEntrada();
-void desactivarVentiladorEntrada();
 
 //VENTILADOR DE SALIDA
 void activarVentiladorSalida();

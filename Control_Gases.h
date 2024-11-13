@@ -15,7 +15,7 @@
 #include <Arduino.h>
 
 //PINES PARA EL SENSOR
-#define MQ7Pin A3
+#define MQ7Pin A0
 
 //FUNCION PARA EL SENSOR DE GAS
 void iniciarControlGases();
