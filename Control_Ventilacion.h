@@ -26,9 +26,9 @@ void iniciarVentiladores();
 void activarVentiladorSalida();
 void desactivarVentiladorSalida(); 
 
-//VENTILADOR DE CALEFACCION
-void activarVentiladorCalefaccion();
-void desactivarVentiladorCalefaccion();
+//VENTILADOR DE ENTRAD
+void activarVentiladorEntrada();
+void desactivarVentiladorEntrada();
 
 #endif
 

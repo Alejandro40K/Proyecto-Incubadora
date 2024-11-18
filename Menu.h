@@ -19,6 +19,8 @@
 #include <RTClib.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include <Wire.h>
+
 
 //BOTONES PARA EL MENU
 #define upButton A1
@@ -39,12 +41,17 @@ void ComenzarSistemaTotal();
 //FUNCIONES PARA LA MEMORIA EEPROM
 void leerParametrosEEPROM();
 void guardarParametrosEEPROM();
-void mostrarMargenesHumedad();
-void mostrarMargenesTemperatura();
+void guardarFechaInicioEEPROM();
+void cargarFechaInicioEEPROM();
+void guardarFechaFinEEPROM();
+void cargarFechaFinEEPROM();
 
 //FUNCIONES PARA EL SUBMENU
 void configurarHumedad();
 void configurarTemperatura();
+void mostrarMargenesHumedad();
+void mostrarMargenesTemperatura();
+void mostrarMargenesDias();
 void configurarDias();
 void mostrarEstado();
 
@@ -62,13 +69,15 @@ void IniciarSistemaTemperatura();
 void ControlarTemperatura();
 float leerTemperatura();
 //RTC dias 
-int obtenerDiaIncubacion() ;
 void IniciarRTC();
+void iniciarCicloIncubacion();
 void configurarDias();
 void leerRTC();
-
-//FUNCIONES DE PRUEBA
-//void comenzarProgramaHumidificador();
+int calcularDiasTranscurridos();
+void verificarFinCiclo();
+void finalizarCiclo();
+void apagarSistemas();
+void actualizarEstadoIncubacion();
 
 #endif
 

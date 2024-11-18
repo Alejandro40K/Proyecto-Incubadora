@@ -11,9 +11,9 @@
 
 //*******************************************************BIBLIOTECAS******************************************************************************//
 #include "Menu.h"
+#include "Control_Ventilacion.h"
 #include "Control_Sistema.h"
 #include "Control_humedad.h"
-#include "Control_Ventilacion.h"
 #include "Control_Alarma.h"
 #include "Control_Gases.h"
 #include "LCD.h"
@@ -25,7 +25,8 @@ OneWire ourWire(2);
 DallasTemperature sensors(&ourWire);
 //RTC DS1307
 RTC_DS1307 rtc;
-DateTime fechaInicioIncubacion;
+DateTime fechaFinIncubacion;
+DateTime fechaInicioIncubacion; // Declara fechaInicioIncubacion
 
 //***************************************************DEFINICION VARIABLES*************************************************************************//
 
@@ -41,7 +42,7 @@ int lastSelectState = HIGH;
 int lastBackState = HIGH;
 // Variables de humedad 
 float humedad = 0; 
-int humedadMin = 40;  // Valor por defecto mínimo de humedad
+int humedadMin = 50;  // Valor por defecto mínimo de humedad
 int humedadMax = 95;  // Valor por defecto máximo de humedad
 // Variables de temperatura
 //float temperatura = 0;
@@ -49,55 +50,53 @@ int temperaturaMin = 24;
 int temperaturaMax = 37;
 float temp =0;
 // Variables RTC dias 
-bool cicloActivo = false; 
+const int EEPROM_DAYS_ADDR = 16;
+const int EEPROM_END_DATE_ADDR = 20;
+const int EEPROM_START_DATE_ADDR = 24;
 int diaIncubacion = 0;
 int diasMaximos = 37;
 int diasMinimos = 17;
-int dias =0;
+bool cicloActivo = false;
 
 //************************************************FUNCIONES PARA INICIAR SISTEMA*******************************************************************//
+void iniciarSistemaTotal() {
+    iniciarBotones();
+    leerParametrosEEPROM();
+    iniciarSistemaHumidificador();
+    IniciarSistemaTemperatura();
+    iniciarVentiladores();
+    IniciarRTC();
+    cargarFechaInicioEEPROM();
+    cargarFechaFinEEPROM();
 
-void iniciarSistemaTotal(){
-  iniciarBotones();
-  leerParametrosEEPROM();
-  iniciarSistemaHumidificador();
-  IniciarSistemaTemperatura();
-  IniciarRTC();
-  mostrarBienvenida();
-  displayMainMenu();
-  //iniciarComponentes();
+    // Comprobar si hay datos válidos para el ciclo activo
+    if (!cicloActivo) {  
+        if (fechaInicioIncubacion.unixtime() == 0 || fechaFinIncubacion.unixtime() == 0) {
+            iniciarCicloIncubacion();  // Solo inicia si no hay fechas válidas
+        } else {
+            cicloActivo = true;  // Marca el ciclo como activo si hay fechas válidas
+        }
+    }
+
+    mostrarBienvenida();
+    displayMainMenu();
 }
 
+//se llama en el void
 void ComenzarSistemaTotal(){
-  //comenzarSistema();
-  handleMenu();
-  controlarHumidificador();
-  ControlarTemperatura();
-}
-
-//******************************************************FUNCIONES RTC DIAS*************************************************************************//
-
-void IniciarRTC() {
-  if (!rtc.begin()) {
-    Serial.println("No se puede encontrar el RTC");
-    while (1);
+  handleMenu();  // Maneja las interacciones del menú
+  if (cicloActivo) {
+    // Si el ciclo está activo, actualiza el estado de la incubación
+    actualizarEstadoIncubacion();
+  } else {
+    // Si el ciclo ha terminado, muestra un mensaje en el LCD
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Ciclo Terminado");
+    lcd.setCursor(0, 1);
+    lcd.print("Esperando reinicio");
+    // Aquí podrías agregar la lógica para reiniciar el ciclo si es necesario. 
   }
-
-  if (!rtc.isrunning()) {
-    Serial.println("El RTC ha perdido el poder, ajustando el reloj...");
-    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));  // Ajusta a la fecha y hora actual de la compilación
-  }
-
-  // Configura la fecha de inicio de la incubación
-  fechaInicioIncubacion = DateTime(2024, 11, 11, 0, 0, 0);  // Puedes modificar esta fecha según necesites
-}
-
-// Función para calcular cuántos días han pasado desde el inicio de la incubación
-int obtenerDiaIncubacion() {
-  DateTime ahora = rtc.now();  // Obtiene la fecha y hora actual del RTC
-  TimeSpan duracion = ahora - fechaInicioIncubacion;  // Calcula la diferencia de tiempo
-  diaIncubacion = duracion.days();  // Guarda el número de días transcurridos en la variable
-  return diaIncubacion;
 }
 
 //******************************************************FUNCIONES EEPROM***************************************************************************//
@@ -109,7 +108,8 @@ void leerParametrosEEPROM() {
     // Leer `temperaturaMax` desde la dirección 2
     EEPROM.get(2, temperaturaMax);
     // Leer `diasMaximos` desde la dirección 16
-    EEPROM.get(16,diasMaximos);
+    EEPROM.get(EEPROM_DAYS_ADDR,diasMaximos);
+    EEPROM.get(EEPROM_DAYS_ADDR + sizeof(diasMaximos), diaIncubacion);
 
     // Validar valores leídos y establecer valores predeterminados si están fuera del rango
     if (humedadMax < humedadMin || humedadMax > 95) humedadMax = 95;
@@ -121,8 +121,113 @@ void leerParametrosEEPROM() {
 void guardarParametrosEEPROM() {
     EEPROM.put(0, humedadMax);       // Guardar `humedadMax` en la dirección 0
     EEPROM.put(2, temperaturaMax);   // Guardar `temperaturaMax` en la dirección 2
-    EEPROM.put(16, diasMaximos);   // Guardar `diaIncubacion` en la dirección 16
+    EEPROM.put(EEPROM_DAYS_ADDR, diasMaximos);   // Guardar `diaIncubacion` en la dirección 16
+    EEPROM.put(EEPROM_DAYS_ADDR + sizeof(diasMaximos), diaIncubacion);
 }
+
+void guardarFechaFinEEPROM() {
+  EEPROM.put(EEPROM_END_DATE_ADDR, fechaFinIncubacion.unixtime());
+}
+
+void cargarFechaFinEEPROM() {
+  uint32_t fechaUnix;
+  EEPROM.get(EEPROM_END_DATE_ADDR, fechaUnix);  // Lee la fecha en formato Unix de la EEPROM
+  fechaFinIncubacion = DateTime(fechaUnix);  // Convierte el valor a un objeto DateTime
+}
+
+// Función para guardar la fecha de inicio en la EEPROM
+void guardarFechaInicioEEPROM() {
+  uint32_t fechaInicio = fechaInicioIncubacion.unixtime();
+  EEPROM.put(EEPROM_START_DATE_ADDR, fechaInicio);
+  Serial.print("Fecha de inicio guardada en EEPROM: ");
+  Serial.println(fechaInicio);
+}
+
+void cargarFechaInicioEEPROM() {
+  uint32_t fechaUnix;
+  EEPROM.get(EEPROM_START_DATE_ADDR, fechaUnix);
+  if (fechaUnix == 0) {  // Verifica si la fecha leída es 0 (valor no inicializado)
+    // Establecer una fecha predeterminada si es el primer inicio
+    fechaInicioIncubacion = rtc.now();
+  } else {
+    fechaInicioIncubacion = DateTime(fechaUnix);
+  }
+  Serial.print("Fecha de inicio de la incubación: ");
+  Serial.println(fechaInicioIncubacion.timestamp());
+}
+
+//******************************************************FUNCIONES RTC DIAS*************************************************************************//
+
+void IniciarRTC() {
+  if (!rtc.begin()) {
+    Serial.println("No se puede encontrar el RTC");
+    while (1);
+  }
+  if (!rtc.isrunning()) {
+    Serial.println("El RTC ha perdido el poder, ajustando el reloj...");
+    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));  // Ajusta a la fecha y hora actual de la compilación
+  }
+}
+
+// Función para iniciar el ciclo de incubación
+void iniciarCicloIncubacion() {
+  DateTime fechaActual = rtc.now();
+  fechaInicioIncubacion = fechaActual;  // Guarda la fecha de inicio
+  fechaFinIncubacion = fechaActual + TimeSpan(diasMaximos, 0, 0, 0);  // Calcula la fecha final sumando los días máximos
+  guardarFechaFinEEPROM();  // Guarda la fecha de fin en la EEPROM
+  guardarFechaInicioEEPROM();  // Guarda la fecha de inicio en la EEPROM
+  cicloActivo = true;  // Marca el ciclo como activo
+  diaIncubacion = 1;  // Inicia el contador de días de incubación
+}
+
+// Nueva función para calcular los días transcurridos
+int calcularDiasTranscurridos() {
+  DateTime fechaActual = rtc.now();
+  TimeSpan diferencia = fechaActual - fechaInicioIncubacion;
+  return diferencia.days();  // Devuelve la diferencia en días
+}
+
+// Función para leer el RTC y mostrar los días transcurridos
+void leerRTC() {
+  int diasTranscurridos = calcularDiasTranscurridos();  // Calcula los días desde el inicio
+
+  // Muestra en el monitor serial
+  Serial.print("Días transcurridos desde el inicio de la incubación: ");
+  Serial.println(diasTranscurridos);
+
+  // Muestra en la pantalla LCD
+  lcd.setCursor(0, 2);
+  lcd.print("Dias: ");
+  lcd.print(diasTranscurridos);
+}
+
+void actualizarEstadoIncubacion() {
+    diaIncubacion = calcularDiasTranscurridos();
+
+    if (diaIncubacion <= diasMaximos - 3) {
+        // Controla solo la temperatura en los primeros días
+        controlarHumidificador();
+        ControlarTemperatura();
+        activarVentiladorEntrada();
+        activarVentiladorSalida();
+    } 
+    else if (diaIncubacion > 18 && diaIncubacion <= diasMaximos) { 
+        // Controla tanto temperatura como humedad en los días siguientes
+        controlarHumidificador(); 
+        ControlarTemperatura(); 
+        activarVentiladorEntrada();
+        activarVentiladorSalida();
+    } 
+    else {
+        desactivarVentiladorSalida();
+        desactivarVentiladorEntrada();
+        lcd.clear();
+        lcd.print("Ciclo finalizado");
+        cicloActivo = false;
+    }
+}
+
+//******************************************************FUNCIONES SUBMENU**************************************************************************//
 
 // Funciones para mostrar los márgenes configurables
 void mostrarMargenesHumedad() {
@@ -163,7 +268,6 @@ void mostrarMargenesDias() {
   lcd.setCursor(0, 3);
   lcd.print("Select para Guardar");
 }
-//******************************************************FUNCIONES SUBMENU**************************************************************************//
 
 void configurarDias() {
     lcd.clear();
@@ -411,7 +515,6 @@ void iniciarBotones(){
   pinMode(backButton, INPUT_PULLUP);
 }
 
-
 //******************************************************FUNCIONES DE CONTROL HUMEDAD***************************************************************//
 
 void controlarHumidificador() {
@@ -457,10 +560,10 @@ void ControlarTemperatura() {
   leerTemperatura();
     if (temp > temperaturaMax) {
         digitalWrite(VentiladorCalefaccion, HIGH); // Apaga el ventilador
-        Serial.println("Ventilador Apagado");
+        //Serial.println("Ventilador Apagado");
     }else{
         digitalWrite(VentiladorCalefaccion, LOW); // Enciende el ventilador
-        Serial.println("Ventilador Encendido");
+        //Serial.println("Ventilador Encendido");
     }
     if (temp > 38) {        
         activarAlarma();
@@ -468,21 +571,4 @@ void ControlarTemperatura() {
     } else {
         desactivarAlarma();
     }
-}
-
-//**************************************************************FUNCIONES CONTROL RTC**************************************************************//
-
-
-void leerRTC(){
-  // Obtenemos el día actual de incubación
-    int diasTranscurridos = obtenerDiaIncubacion();
-
-    // Mostramos en el monitor serial (opcional)
-    Serial.print("Dias transcurridos desde el inicio de la incubacion: ");
-    Serial.println(diasTranscurridos);
-
-    // Mostramos en la pantalla LCD
-    lcd.setCursor(0, 2);
-    lcd.print("Dias: ");
-    lcd.print(diasTranscurridos);
 }

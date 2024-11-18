@@ -15,9 +15,7 @@
 //          EL MENU COMENZAR SISTEMA DESDE EL control_sistema.h
 //////////////////////////////////////////////////////////////////
 
-
 #include "Menu.h"
-#include "Control_humedad.h"
 
 
 void setup() {
@@ -27,7 +25,6 @@ void setup() {
 }
 
 void loop() {
-  handleMenu();
-  controlarHumidificador();
-  ControlarTemperatura();
+  
+  ComenzarSistemaTotal();
 }

@@ -40,20 +40,34 @@ NOTAS:
 
 PRIORIDADES:
 
-1) Añadir sensor de gaz a la incubadora, con alarma, solo es necesario que muestre informacion
 2) Adecuar el motor a pasos para que funcione despues del 13 dia, y que mueva los huevos cada 6 horas
 3) Modificar el RTC para que tenga las siguentes funciones: 
     a) Boton de iniciar sistema: en este boton se reiniciara el sistema con un ciclo de 21 dias.
     b) Mostrar datos: Mostrara los datos de temperatura, dia, humedad y los gases 
-4) MENU: agregar el menu con 2 botones o un joistik
 5) Agregar el control de la tarjeta sim para enviar mensajes al celular. 
 6) cabiar los encabesados de todos los archivos por el que esta hasta arriba de este readme.
 
 
-PENDIENTE 11/11/24
+PENDIENTE 11/12/24
 
 ARCHIVO: Main.cpp
+ 
+1) Mejorar el RTC, comprobar que este realmente funcionando y que cuente los dias de manera exitosa. 
+2) resolver lo del motor AC, implementar el rele para hacerlo. y el sensor de gas, ya tenemos el codigo del sensor, ahora falta lo del motor.
+3) implementar el modulo SMS
+no hay conexion entre los dias maximos y las funciones de eprom, corregir
 
-1) Mejorar la implementacion del control temperatura, posiblemente implementar el control del ventilador calefacciomn directamente en el control 
-temoeratura a la misma forma que el humidifiador. 
-eliminr redundamcia en funciones inicializar
+cambiar a pin servo de 12 a 5 volts pin 11
+
+
+
+
+
+
+
+
+
+
+
+
+

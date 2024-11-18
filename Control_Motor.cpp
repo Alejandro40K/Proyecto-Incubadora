@@ -11,47 +11,59 @@
 #include <Arduino.h> 
 #include "Control_Motor.h"
 
+#define RELAY_PIN 11  // Pin conectado al relé
 
-// Constantes
-const unsigned long tiempoPorVuelta = 21600000; // 6 horas en milisegundos
-const int pasosPorVuelta = 200;  // Número de pasos por vuelta (depende del motor)
+// Variables de temporización
+unsigned long previousMillis = 0;  // Tiempo del último cambio
+const unsigned long intervalOn = 10000;  // 10 segundos (en milisegundos)
+const unsigned long intervalOff = 6 * 60 * 60 * 1000UL;  // 6 horas (en milisegundos)
 
-// Función para inicializar el motor
-void inicializarMotor() {
-  pinMode(STEP_PIN, OUTPUT);
-  pinMode(DIR_PIN, OUTPUT);
-  pinMode(ENABLE_PIN, OUTPUT);
+// Variable para rastrear el estado del relé
+bool relayState = true;  // El relé comienza encendido
 
-  // Inicializar el motor desactivado
-  digitalWrite(ENABLE_PIN, HIGH);  // Desactiva el motor al inicio
-  digitalWrite(DIR_PIN, HIGH);     // Configura la dirección inicial
+void setup() {
+  initializeRelay();  // Configura el relé al inicio
 }
 
-// Función para activar el motor
-void activarMotor() {
-  digitalWrite(ENABLE_PIN, LOW);  // Activa las bobinas del motor
+void loop() {
+  manageRelayCycle();  // Gestiona el ciclo del relé
 }
 
-// Función para desactivar el motor
-void desactivarMotor() {
-  digitalWrite(ENABLE_PIN, HIGH);  // Desactiva las bobinas del motor
+// Función para inicializar el relé
+void initializeRelay() {
+  pinMode(RELAY_PIN, OUTPUT);  // Configura el pin como salida
+  digitalWrite(RELAY_PIN, LOW);  // Enciende el relé inicialmente (activo en LOW)
+  previousMillis = millis();  // Registra el tiempo inicial
 }
 
-// Función para mover el motor una cantidad de pasos en una dirección
-void moverMotorEnDireccion(int direccion) {
-  digitalWrite(DIR_PIN, direccion);  // Configura la dirección de rotación
-  for (int i = 0; i < pasosPorVuelta; i++) {
-    digitalWrite(STEP_PIN, HIGH);
-    delayMicroseconds(1000);  // Ajusta la velocidad
-    digitalWrite(STEP_PIN, LOW);
-    delayMicroseconds(1000);  // Ajusta la velocidad
+// Función para gestionar el ciclo del relé
+void manageRelayCycle() {
+  unsigned long currentMillis = millis();  // Obtén el tiempo actual
+
+  if (relayState) {
+    // Si el relé está encendido, verifica si han pasado 10 segundos
+    if (currentMillis - previousMillis >= intervalOn) {
+      turnRelayOff();  // Apaga el relé
+      previousMillis = currentMillis;  // Reinicia el temporizador
+    }
+  } else {
+    // Si el relé está apagado, verifica si han pasado 6 horas
+    if (currentMillis - previousMillis >= intervalOff) {
+      turnRelayOn();  // Enciende el relé
+      previousMillis = currentMillis;  // Reinicia el temporizador
+    }
   }
 }
 
-// Función para comenzar el ciclo de movimiento
-void iniciarSistemaMotor() {
-  moverMotorEnDireccion(HIGH);  // Mueve el motor en una dirección
-  delay(tiempoPorVuelta);       // Espera 6 horas antes de la próxima vuelta
-  moverMotorEnDireccion(LOW);   // Cambia la dirección y mueve el motor
-  delay(tiempoPorVuelta);  
-}*/
+// Función para encender el relé
+void turnRelayOn() {
+  digitalWrite(RELAY_PIN, LOW);  // Enciende el relé (activo en LOW)
+  relayState = true;  // Actualiza el estado
+}
+
+// Función para apagar el relé
+void turnRelayOff() {
+  digitalWrite(RELAY_PIN, HIGH);  // Apaga el relé
+  relayState = false;  // Actualiza el estado
+}
+*/
